@@ -1,0 +1,12 @@
+/* Example styles for the help button and sidebar */
+#help-navigate-button {
+  background-color: #007BFF;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+#help-navigate-button:hover {
+  background-color: #0056b3;
+}

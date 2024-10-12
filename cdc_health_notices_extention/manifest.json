@@ -1,0 +1,21 @@
+{
+    "manifest_version": 3,
+    "name": "CDC Travel Health Assistant",
+    "version": "1.0",
+    "description": "An augmentative agent to help navigate the CDC Travel Health website.",
+    "permissions": [
+      "activeTab",
+      "storage",
+      "scripting"
+    ],
+    "content_scripts": [
+      {
+        "matches": ["https://wwwnc.cdc.gov/travel/*"],
+        "js": ["contentScript.js"],
+        "css": ["styles.css"]
+      }
+    ],
+    "action": {
+      "default_popup": "popup.html"
+    }
+  }
