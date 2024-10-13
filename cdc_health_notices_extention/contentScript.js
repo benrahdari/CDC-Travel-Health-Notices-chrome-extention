@@ -42,6 +42,10 @@ helpButton.addEventListener('click', () => {
           </div>
           <button id="close-sidebar" style="background: none; border: none; font-size: 1.5em; cursor: pointer;">&times;</button>
         </div>
+        <div style="display: flex; align-items: center; padding: 5px 0;">
+          <label for="transparency-slider" style="margin-right: 10px;">Transparency:</label>
+          <input type="range" id="transparency-slider" min="85" max="100" value="95">
+        </div>
         <div style="padding: 10px;">
           <input type="text" id="notice-search" class="form-control" placeholder="Search notices..." style="margin-bottom: 10px;">
           <button id="expand-all" class="btn btn-sm btn-outline-primary" style="margin-right: 5px;">Expand All</button>
@@ -76,10 +80,23 @@ helpButton.addEventListener('click', () => {
           </div>
         </div>
       </div>
-      <div id="rss-cards-container" style="padding: 10px;"></div> <!-- Container for RSS feed cards -->
+      <div id="rss-cards-container" style="padding: 15px;"></div> <!-- Container for RSS feed cards -->
     </div>
   `;
+
   document.body.appendChild(sidebar);
+
+  // Add transparency slider functionality
+  document.getElementById('transparency-slider').addEventListener('input', function () {
+    console.log('Slider value:', this.value);
+    const transparencyValue = (this.value - 85) / 100;
+    const sidebarInnerElement = document.querySelector('#cdc-assistant-sidebar > div');
+    if (sidebarInnerElement) {
+      sidebarInnerElement.style.opacity = `${1 - transparencyValue}`;
+      sidebarInnerElement.style.transition = 'opacity 0.3s ease';
+    }
+  });
+    
 
   // Fetch and display RSS feed after sidebar is added
   fetchAndDisplayRSS();
