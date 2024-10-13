@@ -1,29 +1,92 @@
 // Add a help button to the top of the page
-const helpButton = document.createElement('button');
+const helpButton = document.createElement('div');
 helpButton.innerHTML = `
-  CDC Travel Health Notices
-  <span id="notification-badge" class="badge rounded-pill bg-danger position-absolute" style="top: -10px; right: -10px;"></span>
+  <div class="cdc-button-ring">
+    <svg width="50" height="50" viewBox="0 0 36 36">
+      <circle class="cdc-ring-background" cx="18" cy="18" r="15.9155" fill="none" stroke="#e6e6e6" stroke-width="3"/>
+      <circle class="cdc-ring-level-1" id="ring-level-1" cx="18" cy="18" r="15.9155" fill="none" stroke="#26418f" stroke-width="3" stroke-dasharray="0, 100" stroke-dashoffset="0"/>
+      <circle class="cdc-ring-level-2" id="ring-level-2" cx="18" cy="18" r="15.9155" fill="none" stroke="#ffd54f" stroke-width="3" stroke-dasharray="0, 100" stroke-dashoffset="0"/>
+      <circle class="cdc-ring-level-3" id="ring-level-3" cx="18" cy="18" r="15.9155" fill="none" stroke="#ffad42" stroke-width="3" stroke-dasharray="0, 100" stroke-dashoffset="0"/>
+      <circle class="cdc-ring-level-4" id="ring-level-4" cx="18" cy="18" r="15.9155" fill="none" stroke="#af4448" stroke-width="3" stroke-dasharray="0, 100" stroke-dashoffset="0"/>
+    </svg>
+    <div class="cdc-ring-text-container">
+      <span class="cdc-ring-number" id="notification-badge">20</span>
+      <span class="cdc-ring-label">CDC <br> Notices</span>
+    </div>
+  </div>
 `;
-helpButton.id = 'help-navigate-button';
-helpButton.classList.add('btn', 'btn-primary');
-helpButton.style.position = 'fixed';
+helpButton.id = 'cdc-extension-help-button';
+helpButton.classList.add('cdc-extension-button');
+helpButton.style.background = 'transparent';
+helpButton.style.border = 'none';
+helpButton.style.cursor = 'pointer';
+helpButton.style.textAlign = 'center';
+helpButton.style.width = 'fit-content';
+helpButton.style.position = 'absolute';
 helpButton.style.top = '15px';
-helpButton.style.right = '15px';
-helpButton.style.zIndex = '9999';  // Set z-index very high to ensure visibility
-helpButton.style.pointerEvents = 'auto';  // Ensure clickability
-helpButton.style.display = 'flex';
-helpButton.style.alignItems = 'center';
-helpButton.style.justifyContent = 'center';
-helpButton.style.width = 'fit-content';  // Adjust width to content
-helpButton.style.padding = '10px';  // Add padding for better visibility
+helpButton.style.left = '15px';
 
-document.body.appendChild(helpButton);
+// Style for the new button ring
+const style = document.createElement('style');
+style.textContent = `
+  .cdc-button-ring {
+    position: relative;
+    width: 50px;
+    height: 50px;
+    margin: 0 auto;
+  }
+  .cdc-ring-background, .cdc-ring-level-1, .cdc-ring-level-2, .cdc-ring-level-3, .cdc-ring-level-4 {
+    transform: rotate(-90deg);
+    transform-origin: 50% 50%;
+  }
+  .cdc-ring-text-container {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+  }
+  .cdc-ring-number {
+    font-size: 16px;
+    font-weight: bold;
+    color: #000000;
+    display: block;
+  }
+  .cdc-ring-label {
+    font-size: 8px;
+    color: #000000;
+  }
+`;
+document.head.appendChild(style);
+
+document.body.prepend(helpButton);
+
+// Make the help button draggable
+let offsetX, offsetY;
+helpButton.addEventListener('mousedown', (e) => {
+  offsetX = e.clientX - helpButton.getBoundingClientRect().left;
+  offsetY = e.clientY - helpButton.getBoundingClientRect().top;
+  document.addEventListener('mousemove', moveButton);
+  document.addEventListener('mouseup', () => {
+    document.removeEventListener('mousemove', moveButton);
+  });
+});
+
+function moveButton(e) {
+  helpButton.style.left = `${e.clientX - offsetX}px`;
+  helpButton.style.top = `${e.clientY - offsetY}px`;
+}
 
 // Fetch and display RSS feed after sidebar is created
 fetchAndDisplayRSS();
 
 // Handle button click to open a sidebar or modal
-helpButton.addEventListener('click', () => {
+helpButton.addEventListener('click', (e) => {
+  // Prevent sidebar from opening after drag
+  if (e.type === 'mouseup' && e.detail > 1) {
+    return;
+  }
+
   // Check if sidebar already exists
   if (document.getElementById('cdc-assistant-sidebar')) {
     return;
@@ -32,55 +95,46 @@ helpButton.addEventListener('click', () => {
   // Inject a sidebar with guidance
   const sidebar = document.createElement('div');
   sidebar.id = 'cdc-assistant-sidebar';
+  sidebar.classList.add('cdc-extension-sidebar');
   sidebar.innerHTML = `
-    <div style="position: fixed; top: 0; right: 0; width: 25%; height: 100%; background: #f8f9fa; border-left: 1px solid #ccc; z-index: 9999; overflow-y: auto; box-shadow: -2px 0 5px rgba(0, 0, 0, 0.1)">
-      <div style="position: sticky; top: 0; background: #f8f9fa; padding: 10px; border-bottom: 1px solid #ccc; display: flex; flex-direction: column; z-index:1002;">
-        <div style="display: flex; justify-content: space-between; align-items: center;">
-          <div>
-            <h4 style="font-family: Arial, sans-serif; font-weight: bold; margin: 0;">CDC Travel Health Notices</h4>
-            <p class="text small mb-1" style="font-size: 0.9em; margin: 0;">CDC uses Travel Health Notices (THNs) to inform travelers about global health risks during outbreaks, special events or gatherings, and natural disasters, and to provide advice about protective actions travelers can take to prevent infection or adverse health effects. Learn more about this at <a href="">CDC Travelers' Health website</a>.</p>
+    <div class="cdc-extension-sidebar-content">
+      <div class="cdc-extension-header">
+        <div class="cdc-extension-header-content">
+          <h4 class="cdc-extension-title">CDC Travel Health Notices</h4>
+          <p class="cdc-extension-description">CDC uses Travel Health Notices (THNs) to inform travelers about global health risks during outbreaks, special events or gatherings, and natural disasters, and to provide advice about protective actions travelers can take to prevent infection or adverse health effects. Learn more about this at <a href="">CDC Travelers' Health website</a>.</p>
+        </div>
+        <button id="close-sidebar" class="cdc-extension-close-button">&times;</button>
+      </div>
+      <div class="cdc-extension-transparency">
+        <label for="transparency-slider" class="cdc-extension-transparency-label">Transparency:</label>
+        <input type="range" id="transparency-slider" class="cdc-extension-transparency-slider" min="85" max="100" value="95">
+      </div>
+      <div class="cdc-extension-controls">
+        <input type="text" id="notice-search" class="cdc-extension-search" placeholder="Search notices...">
+        <button id="expand-all" class="cdc-extension-expand-button">Expand All</button>
+        <button id="collapse-all" class="cdc-extension-collapse-button">Collapse All</button>
+      </div>
+      <div class="cdc-extension-filters">
+        <div class="cdc-extension-filter-row">
+          <div class="cdc-extension-filter">
+            <input class="cdc-extension-filter-checkbox" type="checkbox" id="filter-level-1" checked>
+            <label class="cdc-extension-filter-label" for="filter-level-1">Level 1 (<span id="level-1-count">0</span> notices)</label>
           </div>
-          <button id="close-sidebar" style="background: none; border: none; font-size: 1.5em; cursor: pointer;">&times;</button>
-        </div>
-        <div style="display: flex; align-items: center; padding: 5px 0;">
-          <label for="transparency-slider" style="margin-right: 10px;">Transparency:</label>
-          <input type="range" id="transparency-slider" min="85" max="100" value="95">
-        </div>
-        <div style="padding: 10px;">
-          <input type="text" id="notice-search" class="form-control" placeholder="Search notices..." style="margin-bottom: 10px;">
-          <button id="expand-all" class="btn btn-sm btn-outline-primary" style="margin-right: 5px;">Expand All</button>
-          <button id="collapse-all" class="btn btn-sm btn-outline-secondary">Collapse All</button>
-        </div>
-        <div style="margin-top: 10px;">
-          <div class="row">
-            <div class="col-6">
-              <div class="form-check form-switch">
-                <input class="form-check-input level-filter" type="checkbox" id="filter-level-1" checked>
-                <label class="form-check-label" for="filter-level-1" style="color: #26418f;">Level 1 (<span id="level-1-count">0</span> notices)</label>
-              </div>
-            </div>
-            <div class="col-6">
-              <div class="form-check form-switch">
-                <input class="form-check-input level-filter" type="checkbox" id="filter-level-2" checked>
-                <label class="form-check-label" for="filter-level-2" style="color: #ffd54f;">Level 2 (<span id="level-2-count">0</span> notices)</label>
-              </div>
-            </div>
-            <div class="col-6">
-              <div class="form-check form-switch">
-                <input class="form-check-input level-filter" type="checkbox" id="filter-level-3" checked>
-                <label class="form-check-label" for="filter-level-3" style="color: #ffad42;">Level 3 (<span id="level-3-count">0</span> notices)</label>
-              </div>
-            </div>
-            <div class="col-6">
-              <div class="form-check form-switch">
-                <input class="form-check-input level-filter" type="checkbox" id="filter-level-4" checked>
-                <label class="form-check-label" for="filter-level-4" style="color: #af4448;">Level 4 (<span id="level-4-count">0</span> notices)</label>
-              </div>
-            </div>
+          <div class="cdc-extension-filter">
+            <input class="cdc-extension-filter-checkbox" type="checkbox" id="filter-level-2" checked>
+            <label class="cdc-extension-filter-label" for="filter-level-2">Level 2 (<span id="level-2-count">0</span> notices)</label>
+          </div>
+          <div class="cdc-extension-filter">
+            <input class="cdc-extension-filter-checkbox" type="checkbox" id="filter-level-3" checked>
+            <label class="cdc-extension-filter-label" for="filter-level-3">Level 3 (<span id="level-3-count">0</span> notices)</label>
+          </div>
+          <div class="cdc-extension-filter">
+            <input class="cdc-extension-filter-checkbox" type="checkbox" id="filter-level-4" checked>
+            <label class="cdc-extension-filter-label" for="filter-level-4">Level 4 (<span id="level-4-count">0</span> notices)</label>
           </div>
         </div>
       </div>
-      <div id="rss-cards-container" style="padding: 15px;"></div> <!-- Container for RSS feed cards -->
+      <div id="rss-cards-container" class="cdc-extension-rss-cards-container"></div>
     </div>
   `;
 
@@ -88,16 +142,13 @@ helpButton.addEventListener('click', () => {
 
   // Add transparency slider functionality
   document.getElementById('transparency-slider').addEventListener('input', function () {
-    console.log('Slider value:', this.value);
     const transparencyValue = (this.value - 85) / 100;
-    const sidebarInnerElement = document.querySelector('#cdc-assistant-sidebar > div');
+    const sidebarInnerElement = document.querySelector('.cdc-extension-sidebar-content');
     if (sidebarInnerElement) {
       sidebarInnerElement.style.opacity = `${1 - transparencyValue}`;
-      sidebarInnerElement.style.transition = 'opacity 0.3s ease';
     }
   });
-    
-
+  
   // Fetch and display RSS feed after sidebar is added
   fetchAndDisplayRSS();
 
@@ -106,34 +157,31 @@ helpButton.addEventListener('click', () => {
     sidebar.remove();
   });
 
-  
-
-// Add search functionality to filter notices by title or content
-document.getElementById('notice-search').addEventListener('input', function () {
-  const query = this.value.toLowerCase();
-  document.querySelectorAll('#rss-cards-container .card').forEach((card) => {
-    const title = card.querySelector('.card-header').innerText.toLowerCase();
-    const body = card.querySelector('.card-body').innerText.toLowerCase();
-    card.style.display = title.includes(query) || body.includes(query) ? 'block' : 'none';
+  // Add search functionality to filter notices by title or content
+  document.getElementById('notice-search').addEventListener('input', function () {
+    const query = this.value.toLowerCase();
+    document.querySelectorAll('.cdc-extension-card').forEach((card) => {
+      const title = card.querySelector('.cdc-extension-card-header').innerText.toLowerCase();
+      const body = card.querySelector('.cdc-extension-card-body').innerText.toLowerCase();
+      card.style.display = title.includes(query) || body.includes(query) ? 'block' : 'none';
+    });
   });
-  updateNotificationBadge();
-});
 
-// Expand/Collapse All functionality
-document.getElementById('expand-all').addEventListener('click', () => {
-  document.querySelectorAll('#rss-cards-container .card-body').forEach((body) => {
-    body.style.display = 'block';
+  // Expand/Collapse All functionality
+  document.getElementById('expand-all').addEventListener('click', () => {
+    document.querySelectorAll('.cdc-extension-card-body').forEach((body) => {
+      body.style.display = 'block';
+    });
   });
-});
 
-document.getElementById('collapse-all').addEventListener('click', () => {
-  document.querySelectorAll('#rss-cards-container .card-body').forEach((body) => {
-    body.style.display = 'none';
+  document.getElementById('collapse-all').addEventListener('click', () => {
+    document.querySelectorAll('.cdc-extension-card-body').forEach((body) => {
+      body.style.display = 'none';
+    });
   });
-});
 
   // Add event listeners to the level filter switches
-  document.querySelectorAll('.level-filter').forEach((filter) => {
+  document.querySelectorAll('.cdc-extension-filter-checkbox').forEach((filter) => {
     filter.addEventListener('change', filterNotices);
   });
 });
@@ -172,16 +220,16 @@ async function fetchAndDisplayRSS() {
 
       // Determine the level and corresponding background color
       let level = '1';
-      let bgColor = '#26418f';  // Default Level 1
+      let bgColor = 'cdc-extension-level-1';  // Default Level 1
       if (title.includes('Level 2')) {
         level = '2';
-        bgColor = '#ffd54f';
+        bgColor = 'cdc-extension-level-2';
       } else if (title.includes('Level 3')) {
         level = '3';
-        bgColor = '#ffad42';
+        bgColor = 'cdc-extension-level-3';
       } else if (title.includes('Level 4')) {
         level = '4';
-        bgColor = '#af4448';
+        bgColor = 'cdc-extension-level-4';
       }
 
       // Increment level count
@@ -195,26 +243,22 @@ async function fetchAndDisplayRSS() {
 
       // Create card element
       const card = document.createElement('div');
-      card.classList.add('card', 'mb-3', `level-${level}`);
-      card.style.backgroundColor = 'white';
-      card.style.borderRadius = '8px';
-      card.style.boxShadow = '0 4px 8px rgba(0, 0, 0, 0.1)';
-      card.style.padding = '15px';
+      card.classList.add('cdc-extension-card', `cdc-extension-level-${level}`);
 
       card.innerHTML = `
-        <div class="card-header" style="background-color: ${bgColor}; color: white; border-radius: 5px 5px 0 0; font-family: Arial, sans-serif; font-weight: bold; cursor: pointer;">
+        <div class="cdc-extension-card-header ${bgColor}">
           ${formattedTitle}
         </div>
-        <div class="card-body" style="padding: 10px; display: none;">
-          <div class="d-flex justify-content-between" style="font-size: 0.8em; font-family: Arial, sans-serif; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
-            <small class="text-muted">${pubDate}</small>
-            <small class="text-muted">${category}</small>
+        <div class="cdc-extension-card-body">
+          <div class="cdc-extension-card-meta">
+            <small class="cdc-extension-card-date">${pubDate}</small>
+            <small class="cdc-extension-card-category">${category}</small>
           </div>
-          <h5 class="card-title" style="text-align: left; font-size: 1.1em; font-weight: bold; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;"><a href="${link}" target="_blank" class="text-dark" style="text-decoration: none;">${formattedTitle}</a></h5>
-          <p class="card-text text-muted" style="font-size: 0.9em; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; max-height: 4.8em; font-family: Arial, sans-serif;">
+          <h5 class="cdc-extension-card-title"><a href="${link}" target="_blank" class="cdc-extension-card-link">${formattedTitle}</a></h5>
+          <p class="cdc-extension-card-description">
             ${description}
           </p>
-          <button class="btn btn-link btn-sm text-danger dismiss-card" style="padding: 0; text-decoration: underline; font-family: Arial, sans-serif;">Dismiss</button>
+          <button class="cdc-extension-dismiss-button">Dismiss</button>
         </div>
       `;
 
@@ -224,15 +268,14 @@ async function fetchAndDisplayRSS() {
       }
 
       // Add functionality to toggle card body visibility
-      card.querySelector('.card-header').addEventListener('click', () => {
-        const body = card.querySelector('.card-body');
+      card.querySelector('.cdc-extension-card-header').addEventListener('click', () => {
+        const body = card.querySelector('.cdc-extension-card-body');
         body.style.display = body.style.display === 'none' ? 'block' : 'none';
       });
 
       // Add dismiss functionality for each card
-      card.querySelector('.dismiss-card').addEventListener('click', () => {
+      card.querySelector('.cdc-extension-dismiss-button').addEventListener('click', () => {
         card.remove();
-        
       });
     });
 
@@ -246,15 +289,32 @@ async function fetchAndDisplayRSS() {
     const level4Count = document.getElementById('level-4-count');
     if (level4Count) level4Count.innerText = levelCounts['4'];
 
+    // Calculate total and percentages
+    const totalNotices = items.length;
+    const level1Percentage = (levelCounts['1'] / totalNotices) * 100;
+    const level2Percentage = (levelCounts['2'] / totalNotices) * 100;
+    const level3Percentage = (levelCounts['3'] / totalNotices) * 100;
+    const level4Percentage = (levelCounts['4'] / totalNotices) * 100;
+
+    // Update ring arcs based on percentages
+    document.getElementById('ring-level-1').setAttribute('stroke-dasharray', `${level1Percentage}, 100`);
+    document.getElementById('ring-level-2').setAttribute('stroke-dasharray', `${level2Percentage}, 100`);
+    document.getElementById('ring-level-3').setAttribute('stroke-dasharray', `${level3Percentage}, 100`);
+    document.getElementById('ring-level-4').setAttribute('stroke-dasharray', `${level4Percentage}, 100`);
+
+    // Set dashoffsets for correct positioning
+    document.getElementById('ring-level-2').setAttribute('stroke-dashoffset', `-${level1Percentage}`);
+    document.getElementById('ring-level-3').setAttribute('stroke-dashoffset', `-${level1Percentage + level2Percentage}`);
+    document.getElementById('ring-level-4').setAttribute('stroke-dashoffset', `-${level1Percentage + level2Percentage + level3Percentage}`);
+
   } catch (error) {
     console.error('Failed to fetch RSS feed:', error);
     const cardsContainer = document.getElementById('rss-cards-container');
     if (cardsContainer) {
-      cardsContainer.innerHTML = `<p class="text-danger">Failed to load travel notices. Please try again later.</p>`;
+      cardsContainer.innerHTML = `<p class="cdc-extension-error-message">Failed to load travel notices. Please try again later.</p>`;
     }
   }
 }
-
 
 // Function to filter notices based on selected levels
 function filterNotices() {
@@ -265,10 +325,8 @@ function filterNotices() {
     '4': document.getElementById('filter-level-4').checked
   };
 
-  document.querySelectorAll('#rss-cards-container .card').forEach((card) => {
-    const level = card.classList[2].split('-')[1];
+  document.querySelectorAll('.cdc-extension-card').forEach((card) => {
+    const level = card.classList[1].split('-')[3];
     card.style.display = levelFilters[level] ? 'block' : 'none';
   });
-
-  
 }

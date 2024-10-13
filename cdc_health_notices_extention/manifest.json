@@ -1,21 +1,76 @@
 {
-    "manifest_version": 3,
-    "name": "CDC Travel Health Assistant",
-    "version": "1.0",
-    "description": "An augmentative agent to help navigate the CDC Travel Health website.",
-    "permissions": [
-      "activeTab",
-      "storage",
-      "scripting"
-    ],
-    "content_scripts": [
-      {
-        "matches": ["https://wwwnc.cdc.gov/travel/*"],
-        "js": ["contentScript.js"],
-        "css": ["styles.css"]
-      }
-    ],
-    "action": {
-      "default_popup": "popup.html"
+  "manifest_version": 3,
+  "name": "TravelSafe Notifier",
+  "version": "2.0",
+  "description": "Get real-time CDC travel health alerts as you plan your trips online. TravelSafe Notifier ensures you're aware of any health advisories for destinations you explore on travel sites.",
+  "permissions": [
+    "storage",
+    "scripting"
+  ],
+  "host_permissions": [
+    "https://*.expedia.com/*",
+    "https://*.booking.com/*",
+    "https://*.kayak.com/*",
+    "https://*.tripadvisor.com/*",
+    "https://*.airbnb.com/*",
+    "https://*.hotels.com/*",
+    "https://*.google.com/flights*",
+    "https://*.aa.com/*",                 
+    "https://*.delta.com/*",              
+    "https://*.united.com/*",            
+    "https://*.southwest.com/*",          
+    "https://*.jetblue.com/*",           
+    "https://*.alaskaair.com/*",          
+    "https://*.spirit.com/*",
+    "https://*.agoda.com/*",
+    "https://*.trivago.com/*",
+    "https://*.vrbo.com/*",
+    "https://*.couchsurfing.com/*",
+    "https://*.hertz.com/*",
+    "https://*.enterprise.com/*",
+    "https://*.avis.com/*",
+    "https://*.budget.com/*",
+    "https://*.cruisecritic.com/*",
+    "https://*.cruise.com/*",
+    "https://*.vacationstogo.com/*",
+    "https://*.cruisesonly.com/*"
+  ],
+  "content_scripts": [
+    {
+      "matches": [
+        "https://*.expedia.com/*",
+        "https://*.booking.com/*",
+        "https://*.kayak.com/*",
+        "https://*.tripadvisor.com/*",
+        "https://*.airbnb.com/*",
+        "https://*.hotels.com/*",
+        "https://*.google.com/flights*",
+        "https://*.aa.com/*",                 
+        "https://*.delta.com/*",              
+        "https://*.united.com/*",            
+        "https://*.southwest.com/*",          
+        "https://*.jetblue.com/*",           
+        "https://*.alaskaair.com/*",          
+        "https://*.spirit.com/*",
+        "https://*.agoda.com/*",
+        "https://*.trivago.com/*",
+        "https://*.vrbo.com/*",
+        "https://*.couchsurfing.com/*",
+        "https://*.hertz.com/*",
+        "https://*.enterprise.com/*",
+        "https://*.avis.com/*",
+        "https://*.budget.com/*",
+        "https://*.cruisecritic.com/*",
+        "https://*.cruise.com/*",
+        "https://*.vacationstogo.com/*",
+        "https://*.cruisesonly.com/*",
+        "https://*.google.com/travel/*"
+      ],
+      "js": ["contentScript.js"],
+      "css": ["styles.css"]
     }
+  ],
+  "action": {
+    "default_popup": "popup.html"
   }
+}
