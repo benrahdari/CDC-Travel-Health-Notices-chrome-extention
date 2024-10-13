@@ -220,10 +220,14 @@ async function fetchAndDisplayRSS() {
     });
 
     // Update level counts after processing all items
-    document.getElementById('level-1-count').innerText = levelCounts['1'];
-    document.getElementById('level-2-count').innerText = levelCounts['2'];
-    document.getElementById('level-3-count').innerText = levelCounts['3'];
-    document.getElementById('level-4-count').innerText = levelCounts['4'];
+    const level1Count = document.getElementById('level-1-count');
+    if (level1Count) level1Count.innerText = levelCounts['1'];
+    const level2Count = document.getElementById('level-2-count');
+    if (level2Count) level2Count.innerText = levelCounts['2'];
+    const level3Count = document.getElementById('level-3-count');
+    if (level3Count) level3Count.innerText = levelCounts['3'];
+    const level4Count = document.getElementById('level-4-count');
+    if (level4Count) level4Count.innerText = levelCounts['4'];
 
   } catch (error) {
     console.error('Failed to fetch RSS feed:', error);
