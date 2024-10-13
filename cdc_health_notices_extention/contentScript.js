@@ -2,10 +2,7 @@
 const helpButton = document.createElement('button');
 helpButton.innerHTML = `
   CDC Travel Health Notices
-  <span id="notification-badge" class="badge rounded-pill bg-danger position-absolute" style="top: -10px; right: -10px;">
-    0
-    <span class="visually-hidden">unread notices</span>
-  </span>
+  <span id="notification-badge" class="badge rounded-pill bg-danger position-absolute" style="top: -10px; right: -10px;"></span>
 `;
 helpButton.id = 'help-navigate-button';
 helpButton.classList.add('btn', 'btn-primary');
@@ -22,7 +19,7 @@ helpButton.style.padding = '10px';  // Add padding for better visibility
 
 document.body.appendChild(helpButton);
 
-// Fetch and display RSS feed immediately on page load
+// Fetch and display RSS feed after sidebar is created
 fetchAndDisplayRSS();
 
 // Handle button click to open a sidebar or modal
@@ -45,30 +42,35 @@ helpButton.addEventListener('click', () => {
           </div>
           <button id="close-sidebar" style="background: none; border: none; font-size: 1.5em; cursor: pointer;">&times;</button>
         </div>
+        <div style="padding: 10px;">
+          <input type="text" id="notice-search" class="form-control" placeholder="Search notices..." style="margin-bottom: 10px;">
+          <button id="expand-all" class="btn btn-sm btn-outline-primary" style="margin-right: 5px;">Expand All</button>
+          <button id="collapse-all" class="btn btn-sm btn-outline-secondary">Collapse All</button>
+        </div>
         <div style="margin-top: 10px;">
           <div class="row">
             <div class="col-6">
               <div class="form-check form-switch">
                 <input class="form-check-input level-filter" type="checkbox" id="filter-level-1" checked>
-                <label class="form-check-label" for="filter-level-1" style="color: #26418f;">Level 1 (Blue)</label>
+                <label class="form-check-label" for="filter-level-1" style="color: #26418f;">Level 1 (<span id="level-1-count">0</span> notices)</label>
               </div>
             </div>
             <div class="col-6">
               <div class="form-check form-switch">
                 <input class="form-check-input level-filter" type="checkbox" id="filter-level-2" checked>
-                <label class="form-check-label" for="filter-level-2" style="color: #ffd54f;">Level 2 (Yellow)</label>
+                <label class="form-check-label" for="filter-level-2" style="color: #ffd54f;">Level 2 (<span id="level-2-count">0</span> notices)</label>
               </div>
             </div>
             <div class="col-6">
               <div class="form-check form-switch">
                 <input class="form-check-input level-filter" type="checkbox" id="filter-level-3" checked>
-                <label class="form-check-label" for="filter-level-3" style="color: #ffad42;">Level 3 (Orange)</label>
+                <label class="form-check-label" for="filter-level-3" style="color: #ffad42;">Level 3 (<span id="level-3-count">0</span> notices)</label>
               </div>
             </div>
             <div class="col-6">
               <div class="form-check form-switch">
                 <input class="form-check-input level-filter" type="checkbox" id="filter-level-4" checked>
-                <label class="form-check-label" for="filter-level-4" style="color: #af4448;">Level 4 (Red)</label>
+                <label class="form-check-label" for="filter-level-4" style="color: #af4448;">Level 4 (<span id="level-4-count">0</span> notices)</label>
               </div>
             </div>
           </div>
@@ -79,13 +81,39 @@ helpButton.addEventListener('click', () => {
   `;
   document.body.appendChild(sidebar);
 
+  // Fetch and display RSS feed after sidebar is added
+  fetchAndDisplayRSS();
+
   // Close sidebar functionality
   document.getElementById('close-sidebar').addEventListener('click', () => {
     sidebar.remove();
   });
 
-  // Fetch and display RSS feed
-  fetchAndDisplayRSS();
+  
+
+// Add search functionality to filter notices by title or content
+document.getElementById('notice-search').addEventListener('input', function () {
+  const query = this.value.toLowerCase();
+  document.querySelectorAll('#rss-cards-container .card').forEach((card) => {
+    const title = card.querySelector('.card-header').innerText.toLowerCase();
+    const body = card.querySelector('.card-body').innerText.toLowerCase();
+    card.style.display = title.includes(query) || body.includes(query) ? 'block' : 'none';
+  });
+  updateNotificationBadge();
+});
+
+// Expand/Collapse All functionality
+document.getElementById('expand-all').addEventListener('click', () => {
+  document.querySelectorAll('#rss-cards-container .card-body').forEach((body) => {
+    body.style.display = 'block';
+  });
+});
+
+document.getElementById('collapse-all').addEventListener('click', () => {
+  document.querySelectorAll('#rss-cards-container .card-body').forEach((body) => {
+    body.style.display = 'none';
+  });
+});
 
   // Add event listeners to the level filter switches
   document.querySelectorAll('.level-filter').forEach((filter) => {
@@ -112,16 +140,18 @@ async function fetchAndDisplayRSS() {
 
     // Parse each item in the RSS feed
     const items = xml.querySelectorAll('item');
+    const levelCounts = { '1': 0, '2': 0, '3': 0, '4': 0 };
     const notificationBadge = document.getElementById('notification-badge');
-    notificationBadge.innerText = items.length;
-    notificationBadge.style.display = items.length > 0 ? 'inline' : 'none';
+    if (notificationBadge) {
+      notificationBadge.innerText = items.length;
+    }
 
     items.forEach(item => {
-      const title = item.querySelector('title').textContent;
-      let pubDate = item.querySelector('pubDate').textContent;
-      const category = item.querySelector('category').textContent;
-      const description = item.querySelector('description').textContent;
-      const link = item.querySelector('link').textContent;
+      const title = item.querySelector('title')?.textContent || '';
+      let pubDate = item.querySelector('pubDate')?.textContent || '';
+      const category = item.querySelector('category')?.textContent || '';
+      const description = item.querySelector('description')?.textContent || '';
+      const link = item.querySelector('link')?.textContent || '';
 
       // Determine the level and corresponding background color
       let level = '1';
@@ -136,6 +166,9 @@ async function fetchAndDisplayRSS() {
         level = '4';
         bgColor = '#af4448';
       }
+
+      // Increment level count
+      levelCounts[level]++;
 
       // Remove level information from the title
       const formattedTitle = title.replace(/Level \d+ - /, '');
@@ -152,10 +185,10 @@ async function fetchAndDisplayRSS() {
       card.style.padding = '15px';
 
       card.innerHTML = `
-        <div class="card-header" style="background-color: ${bgColor}; color: white; border-radius: 5px 5px 0 0; font-family: Arial, sans-serif; font-weight: bold;">
+        <div class="card-header" style="background-color: ${bgColor}; color: white; border-radius: 5px 5px 0 0; font-family: Arial, sans-serif; font-weight: bold; cursor: pointer;">
           ${formattedTitle}
         </div>
-        <div class="card-body" style="padding: 10px;">
+        <div class="card-body" style="padding: 10px; display: none;">
           <div class="d-flex justify-content-between" style="font-size: 0.8em; font-family: Arial, sans-serif; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
             <small class="text-muted">${pubDate}</small>
             <small class="text-muted">${category}</small>
@@ -173,12 +206,25 @@ async function fetchAndDisplayRSS() {
         cardsContainer.appendChild(card);
       }
 
+      // Add functionality to toggle card body visibility
+      card.querySelector('.card-header').addEventListener('click', () => {
+        const body = card.querySelector('.card-body');
+        body.style.display = body.style.display === 'none' ? 'block' : 'none';
+      });
+
       // Add dismiss functionality for each card
       card.querySelector('.dismiss-card').addEventListener('click', () => {
         card.remove();
-        updateNotificationBadge();
+        
       });
     });
+
+    // Update level counts after processing all items
+    document.getElementById('level-1-count').innerText = levelCounts['1'];
+    document.getElementById('level-2-count').innerText = levelCounts['2'];
+    document.getElementById('level-3-count').innerText = levelCounts['3'];
+    document.getElementById('level-4-count').innerText = levelCounts['4'];
+
   } catch (error) {
     console.error('Failed to fetch RSS feed:', error);
     const cardsContainer = document.getElementById('rss-cards-container');
@@ -188,13 +234,6 @@ async function fetchAndDisplayRSS() {
   }
 }
 
-// Function to update the notification badge
-function updateNotificationBadge() {
-  const remainingCards = document.querySelectorAll('#rss-cards-container .card').length;
-  const notificationBadge = document.getElementById('notification-badge');
-  notificationBadge.innerText = remainingCards;
-  notificationBadge.style.display = remainingCards > 0 ? 'inline' : 'none';
-}
 
 // Function to filter notices based on selected levels
 function filterNotices() {
@@ -210,5 +249,5 @@ function filterNotices() {
     card.style.display = levelFilters[level] ? 'block' : 'none';
   });
 
-  updateNotificationBadge();
+  
 }
