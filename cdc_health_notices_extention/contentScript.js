@@ -2,16 +2,28 @@
 const helpButton = document.createElement('div');
 helpButton.innerHTML = `
   <div class="cdc-button-ring">
-    <svg width="50" height="50" viewBox="0 0 36 36">
-      <circle class="cdc-ring-background" cx="18" cy="18" r="15.9155" fill="none" stroke="#e6e6e6" stroke-width="3"/>
-      <circle class="cdc-ring-level-1" id="ring-level-1" cx="18" cy="18" r="15.9155" fill="none" stroke="#26418f" stroke-width="3" stroke-dasharray="0, 100" stroke-dashoffset="0"/>
-      <circle class="cdc-ring-level-2" id="ring-level-2" cx="18" cy="18" r="15.9155" fill="none" stroke="#ffd54f" stroke-width="3" stroke-dasharray="0, 100" stroke-dashoffset="0"/>
-      <circle class="cdc-ring-level-3" id="ring-level-3" cx="18" cy="18" r="15.9155" fill="none" stroke="#ffad42" stroke-width="3" stroke-dasharray="0, 100" stroke-dashoffset="0"/>
-      <circle class="cdc-ring-level-4" id="ring-level-4" cx="18" cy="18" r="15.9155" fill="none" stroke="#af4448" stroke-width="3" stroke-dasharray="0, 100" stroke-dashoffset="0"/>
-    </svg>
+
+<svg viewBox="0 0 36 36" class="cdc-extension-svg" stroke-linejoin="bevel">
+  <!-- Level 1 ring (Percentage of notices with level 1) -->
+  <circle class="cdc-ring-level-1" id="ring-level-1" cx="18" cy="18" r="14" fill="none" stroke="#26418f" 
+          stroke-width="5" stroke-dasharray="0 100" stroke-dashoffset="0" stroke-linecap="round"/>
+
+  <!-- Level 2 ring (Percentage of notices with level 2) -->
+  <circle class="cdc-ring-level-2" id="ring-level-2" cx="18" cy="18" r="14" fill="none" stroke="#ffd54f" 
+          stroke-width="5" stroke-dasharray="0 100" stroke-dashoffset="0" stroke-linecap="round"/>
+
+  <!-- Level 3 ring (Percentage of notices with level 3) -->
+  <circle class="cdc-ring-level-3" id="ring-level-3" cx="18" cy="18" r="14" fill="none" stroke="#ffad42" 
+          stroke-width="5" stroke-dasharray="0 100" stroke-dashoffset="0" stroke-linecap="round"/>
+
+  <!-- Level 4 ring (Percentage of notices with level 4) -->
+  <circle class="cdc-ring-level-4" id="ring-level-4" cx="18" cy="18" r="14" fill="none" stroke="#af4448" 
+          stroke-width="5" stroke-dasharray="0 100" stroke-dashoffset="0" stroke-linecap="round"/>
+</svg>
+
     <div class="cdc-ring-text-container">
       <span class="cdc-ring-number" id="notification-badge">20</span>
-      <span class="cdc-ring-label">CDC <br> Notices</span>
+      <span class="cdc-ring-label" id="notification-badge">CDC Notices</span>
     </div>
   </div>
 `;
@@ -31,8 +43,8 @@ const style = document.createElement('style');
 style.textContent = `
   .cdc-button-ring {
     position: relative;
-    width: 50px;
-    height: 50px;
+    width: 70px;
+    height: 70px;
     margin: 0 auto;
   }
   .cdc-ring-background, .cdc-ring-level-1, .cdc-ring-level-2, .cdc-ring-level-3, .cdc-ring-level-4 {
@@ -63,18 +75,35 @@ document.body.prepend(helpButton);
 
 // Make the help button draggable
 let offsetX, offsetY;
+let isDragging = false;
 helpButton.addEventListener('mousedown', (e) => {
   offsetX = e.clientX - helpButton.getBoundingClientRect().left;
   offsetY = e.clientY - helpButton.getBoundingClientRect().top;
+  isDragging = true;
   document.addEventListener('mousemove', moveButton);
-  document.addEventListener('mouseup', () => {
+});
+
+document.addEventListener('mouseup', (e) => {
+  if (isDragging) {
     document.removeEventListener('mousemove', moveButton);
-  });
+    isDragging = false;
+  }
 });
 
 function moveButton(e) {
-  helpButton.style.left = `${e.clientX - offsetX}px`;
-  helpButton.style.top = `${e.clientY - offsetY}px`;
+  const minX = 0;
+  const minY = 0;
+  const maxX = window.innerWidth - helpButton.offsetWidth;
+  const maxY = window.innerHeight - helpButton.offsetHeight;
+
+  let newX = e.clientX - offsetX;
+  let newY = e.clientY - offsetY;
+
+  newX = Math.max(minX, Math.min(newX, maxX));
+  newY = Math.max(minY, Math.min(newY, maxY));
+
+  helpButton.style.left = `${newX}px`;
+  helpButton.style.top = `${newY}px`;
 }
 
 // Fetch and display RSS feed after sidebar is created
@@ -83,7 +112,7 @@ fetchAndDisplayRSS();
 // Handle button click to open a sidebar or modal
 helpButton.addEventListener('click', (e) => {
   // Prevent sidebar from opening after drag
-  if (e.type === 'mouseup' && e.detail > 1) {
+  if (isDragging) {
     return;
   }
 
@@ -99,62 +128,108 @@ helpButton.addEventListener('click', (e) => {
   sidebar.innerHTML = `
     <div class="cdc-extension-sidebar-content">
       <div class="cdc-extension-header">
+      <button id="close-sidebar" class="cdc-extension-close-button">&times;</button>
         <div class="cdc-extension-header-content">
           <h4 class="cdc-extension-title">CDC Travel Health Notices</h4>
-          <p class="cdc-extension-description">CDC uses Travel Health Notices (THNs) to inform travelers about global health risks during outbreaks, special events or gatherings, and natural disasters, and to provide advice about protective actions travelers can take to prevent infection or adverse health effects. Learn more about this at <a href="">CDC Travelers' Health website</a>.</p>
-        </div>
-        <button id="close-sidebar" class="cdc-extension-close-button">&times;</button>
+          <p class="cdc-extension-description">CDC uses Travel Health Notices (THNs) to inform travelers about global health risks during outbreaks, special events or gatherings, and natural disasters, and to ... <a target="_blank" href="https://wwwnc.cdc.gov/travel/notices#travel-notice-definitions">[Learn more]</a>.</p>
+        </div> 
       </div>
-      <div class="cdc-extension-transparency">
-        <label for="transparency-slider" class="cdc-extension-transparency-label">Transparency:</label>
-        <input type="range" id="transparency-slider" class="cdc-extension-transparency-slider" min="85" max="100" value="95">
-      </div>
+
       <div class="cdc-extension-controls">
-        <input type="text" id="notice-search" class="cdc-extension-search" placeholder="Search notices...">
-        <button id="expand-all" class="cdc-extension-expand-button">Expand All</button>
-        <button id="collapse-all" class="cdc-extension-collapse-button">Collapse All</button>
+      <p class="cdc-extension-label-text-small">Find notices related to your travel</p>
+        <input type="text" id="notice-search" class="cdc-extension-search" placeholder="Enter your destination...">
       </div>
-      <div class="cdc-extension-filters">
-        <div class="cdc-extension-filter-row">
-          <div class="cdc-extension-filter">
-            <input class="cdc-extension-filter-checkbox" type="checkbox" id="filter-level-1" checked>
-            <label class="cdc-extension-filter-label" for="filter-level-1">Level 1 (<span id="level-1-count">0</span> notices)</label>
-          </div>
-          <div class="cdc-extension-filter">
-            <input class="cdc-extension-filter-checkbox" type="checkbox" id="filter-level-2" checked>
-            <label class="cdc-extension-filter-label" for="filter-level-2">Level 2 (<span id="level-2-count">0</span> notices)</label>
-          </div>
-          <div class="cdc-extension-filter">
-            <input class="cdc-extension-filter-checkbox" type="checkbox" id="filter-level-3" checked>
-            <label class="cdc-extension-filter-label" for="filter-level-3">Level 3 (<span id="level-3-count">0</span> notices)</label>
-          </div>
-          <div class="cdc-extension-filter">
-            <input class="cdc-extension-filter-checkbox" type="checkbox" id="filter-level-4" checked>
-            <label class="cdc-extension-filter-label" for="filter-level-4">Level 4 (<span id="level-4-count">0</span> notices)</label>
+
+      
+      <div class="cdc-extension-options" >
+      <p class="cdc-extension-label-text-small" id="toggle-button">[+] open options.</p>
+
+       <hr class="cdc-extention-hr-options">
+
+        <p class="cdc-extension-label-text-small">Filter results</p>
+        <div class="cdc-extension-filters">
+          <div class="cdc-extension-filter-row">
+            <div class="cdc-extension-filter">
+              <input class="cdc-extension-filter-checkbox" type="checkbox" id="filter-level-1" checked>
+              <label class="cdc-extension-filter-label" for="filter-level-1">Level 1 (<span id="level-1-count">0</span> notices)</label>
+            </div>
+            <div class="cdc-extension-filter">
+              <input class="cdc-extension-filter-checkbox" type="checkbox" id="filter-level-2" checked>
+              <label class="cdc-extension-filter-label" for="filter-level-2">Level 2 (<span id="level-2-count">0</span> notices)</label>
+            </div>
+            <div class="cdc-extension-filter">
+              <input class="cdc-extension-filter-checkbox" type="checkbox" id="filter-level-3" checked>
+              <label class="cdc-extension-filter-label" for="filter-level-3">Level 3 (<span id="level-3-count">0</span> notices)</label>
+            </div>
+            <div class="cdc-extension-filter">
+              <input class="cdc-extension-filter-checkbox" type="checkbox" id="filter-level-4" checked>
+              <label class="cdc-extension-filter-label" for="filter-level-4">Level 4 (<span id="level-4-count">0</span> notices)</label>
+            </div>
           </div>
         </div>
+
+        <hr class="cdc-extention-hr-options">
+
+                <p class="cdc-extension-label-text-small">Details view</p>
+        <div class="cdc-extension-expand-collapse">
+          <button id="expand-all" class="cdc-extension-expand-button">Expand All</button>
+          <button id="collapse-all" class="cdc-extension-collapse-button">Collapse All</button>
+        </div>
+
+        <hr class="cdc-extention-hr-options">
+
+        <p class="cdc-extension-label-text-small">Sidebar transparency</p>
+
+
+        <div class="cdc-extension-transparency">
+  <label for="transparency-slider" class="cdc-extension-transparency-label">Transparency:</label>
+  <input type="range" id="transparency-slider" class="cdc-extension-transparency-slider" min="1" max="5" value="1">
+  
+  <div class="cdc-extension-slider-labels">
+    <span class="cdc-extension-slider-label-end">More</span>
+  </div>
+</div>
+        
+
+
+        <hr class="cdc-extention-hr-options">
+
+
+
       </div>
+
+
       <div id="rss-cards-container" class="cdc-extension-rss-cards-container"></div>
+
+
+      <div class="cdc-extension-footer"> 
+        <p> This extension is free and open source. <a href="https://github.com/benrahdari/CDC-Travel-Health-Notices-chrome-extention">[Learn more]</a></p>
+      </div>
     </div>
   `;
 
   document.body.appendChild(sidebar);
-
-  // Add transparency slider functionality
-  document.getElementById('transparency-slider').addEventListener('input', function () {
-    const transparencyValue = (this.value - 85) / 100;
-    const sidebarInnerElement = document.querySelector('.cdc-extension-sidebar-content');
-    if (sidebarInnerElement) {
-      sidebarInnerElement.style.opacity = `${1 - transparencyValue}`;
-    }
-  });
+// Add transparency slider functionality
+document.getElementById('transparency-slider').addEventListener('input', function () {
+  const transparencyValue = 1 - (this.value - 1) * 0.05; // Maps 5 to 1 range to 1 to 0.8 opacity
+  const sidebarInnerElement = document.querySelector('.cdc-extension-sidebar-content');
+  const sidebarOutterElement = document.querySelector('.cdc-extension-sidebar');
+  if (sidebarInnerElement ) {
+    sidebarInnerElement.style.opacity = `${transparencyValue}`;
+    sidebarOutterElement.style.opacity = `${transparencyValue}`;
+  }
+});
   
   // Fetch and display RSS feed after sidebar is added
   fetchAndDisplayRSS();
 
-  // Close sidebar functionality
+  // Close sidebar functionality with animation
   document.getElementById('close-sidebar').addEventListener('click', () => {
-    sidebar.remove();
+    sidebar.style.transition = 'opacity 0.5s ease';
+    sidebar.style.opacity = '0';
+    setTimeout(() => {
+      sidebar.remove();
+    }, 500);
   });
 
   // Add search functionality to filter notices by title or content
@@ -246,10 +321,34 @@ async function fetchAndDisplayRSS() {
       card.classList.add('cdc-extension-card', `cdc-extension-level-${level}`);
 
       card.innerHTML = `
-        <div class="cdc-extension-card-header ${bgColor}">
-          ${formattedTitle}
-        </div>
-        <div class="cdc-extension-card-body">
+
+
+      <div class="cdc-extension-card-header cdc-extension-level">
+
+      <div class="cdc-extension-circle-container-${level}">
+    <div class="cdc-extension-circle-text">
+      <div class="cdc-extension-level">LEVEL</div>
+      <div class="cdc-extension-number">0${level}</div>
+    </div>
+  </div>
+
+  <div class="cdc-extension-card-header-text">
+
+    <div class="cdc-extension-card-title-visible">
+
+    <div class="cdc-extension-card-title-visible-text">${formattedTitle}</div>
+
+    <div class="cdc-extension-card-title-visible-expand">⛶</div>
+
+    </div>
+
+
+    <div class="cdc-extension-card-date">
+      ${pubDate}
+    </div>
+  </div>
+</div>
+        <div class="cdc-extension-card-body cdc-extension-bg${level}">
           <div class="cdc-extension-card-meta">
             <small class="cdc-extension-card-date">${pubDate}</small>
             <small class="cdc-extension-card-category">${category}</small>
@@ -260,6 +359,8 @@ async function fetchAndDisplayRSS() {
           </p>
           <button class="cdc-extension-dismiss-button">Dismiss</button>
         </div>
+
+      
       `;
 
       // Append the card to the rss-cards-container
@@ -269,14 +370,31 @@ async function fetchAndDisplayRSS() {
 
       // Add functionality to toggle card body visibility
       card.querySelector('.cdc-extension-card-header').addEventListener('click', () => {
-        const body = card.querySelector('.cdc-extension-card-body');
-        body.style.display = body.style.display === 'none' ? 'block' : 'none';
+        const cbody = card.querySelector('.cdc-extension-card-body');
+        //cbody.style.display = cbody.style.display === 'none' ? 'block' : 'none';
+
+          // Ensure initial display state is set to 'none' if not already defined
+  if (cbody.style.display === '') {
+    cbody.style.display = 'none';
+  }
+
+        if (cbody.style.display === 'none') {
+          cbody.style.display = 'block';
+        } else {
+          cbody.style.display = 'none';
+        }
+
+       
       });
 
       // Add dismiss functionality for each card
       card.querySelector('.cdc-extension-dismiss-button').addEventListener('click', () => {
         card.remove();
       });
+
+
+
+
     });
 
     // Update level counts after processing all items
@@ -330,3 +448,45 @@ function filterNotices() {
     card.style.display = levelFilters[level] ? 'block' : 'none';
   });
 }
+
+// Function to initialize the toggle functionality once elements are found
+function initializeToggleButton() {
+  const toggleButton = document.getElementById("toggle-button");
+  const optionsDiv = document.querySelector(".cdc-extension-options");
+
+  if (!toggleButton || !optionsDiv) {
+    console.error("Elements not found: toggleButton or optionsDiv");
+    return;
+  }
+
+  // Add click event listener to toggle the visibility of optionsDiv
+  toggleButton.addEventListener("click", function () {
+    optionsDiv.classList.toggle("open");
+
+    if (toggleButton.textContent.trim() === "[+] open options.") {
+      toggleButton.textContent = "[-] close options.";
+    } else {
+      toggleButton.textContent = "[+] open options.";
+    }
+
+  });
+
+}
+
+// Observe DOM changes to detect when the toggle button and options div are added
+const observer = new MutationObserver((mutations, obs) => {
+  const toggleButton = document.getElementById("toggle-button");
+  const optionsDiv = document.querySelector(".cdc-extension-options");
+
+  if (toggleButton && optionsDiv) {
+    // Stop observing once elements are found and initialized
+    initializeToggleButton();
+    obs.disconnect();
+  }
+});
+
+// Start observing the document body for child elements being added
+observer.observe(document.body, {
+  childList: true,
+  subtree: true
+});

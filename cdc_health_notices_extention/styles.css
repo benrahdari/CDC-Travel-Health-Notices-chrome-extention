@@ -1,12 +1,29 @@
 /* Styles for CDC Travel Health Extension */
 
+.cdc-extension-bg1 {
+  background-color: rgb(212 223 255);
+
+}
+
+.cdc-extension-bg2 {
+  background-color:#fbefca;
+}
+
+.cdc-extension-bg3 {
+  background-color:rgb(255 238 215);
+}
+
+.cdc-extension-bg4 {
+  background-color: #ffe5e6;
+}
+
+
 /* General Button Styles */
 .cdc-extension-button {
   position: fixed;
   top: 15px;
   right: 15px;
   background-color: transparent;
-  color: white;
   border: none;
   cursor: pointer;
   padding: 0;
@@ -17,14 +34,19 @@
 /* Button Ring Styles */
 .cdc-button-ring {
   position: relative;
-  width: 50px;
-  height: 50px;
+  width: -webkit-fill-available;
+  ;
+  height: auto;
   margin: 0 auto;
-  background: #673ab730;
+  background: #ffffff9c;
   border-radius: 50%;
 }
 
-.cdc-ring-background, .cdc-ring-level-1, .cdc-ring-level-2, .cdc-ring-level-3, .cdc-ring-level-4 {
+.cdc-ring-background,
+.cdc-ring-level-1,
+.cdc-ring-level-2,
+.cdc-ring-level-3,
+.cdc-ring-level-4 {
   transform: rotate(-90deg);
   transform-origin: 50% 50%;
 }
@@ -57,11 +79,13 @@
 
 .cdc-ring-label {
   padding: 0 !important;
-  margin: 0 !important;
-  font-size: 7px;
   color: #000000;
-  line-height: initial;
-  text-wrap: nowrap;
+  text-wrap: pretty;
+  line-height: 1;
+  margin-bottom: 7px !important;
+  font-size: 7px;
+
+
 }
 
 /* Sidebar Styles */
@@ -100,8 +124,14 @@
 }
 
 .cdc-extension-description {
+
   font-size: 14px;
-  margin: 5px 0;
+  ;
+  color: #9E9E9E;
+  margin-top: 5px;
+
+  padding: 5px;
+
 }
 
 .cdc-extension-close-button {
@@ -109,17 +139,20 @@
   border: none;
   font-size: 1.5em;
   cursor: pointer;
+  float: right;
 }
 
 /* Transparency Slider */
 .cdc-extension-transparency {
   display: flex;
   align-items: center;
-  padding: 10px 0;
+  padding: 3px 0;
 }
 
 .cdc-extension-transparency-label {
-  margin-right: 10px;
+  display: block;
+  margin-bottom: 8px;
+
 }
 
 /* Controls and Filter Styles */
@@ -130,20 +163,24 @@
 .cdc-extension-search {
   width: 100%;
   padding: 8px;
-  margin-bottom: 10px;
+  margin-bottom: 1px;
   border-radius: 5px;
   border: 1px solid #ccc;
+  max-width: -webkit-fill-available;
 }
 
 .cdc-extension-expand-button,
 .cdc-extension-collapse-button {
-  margin-right: 5px;
-  padding: 8px;
+  margin-right: 3px;
   border: 1px solid #007BFF;
   background: white;
   color: #007BFF;
   border-radius: 5px;
   cursor: pointer;
+  padding: 5px 3px 3px 5px;
+  width: 45%;
+
+
 }
 
 .cdc-extension-expand-button:hover,
@@ -172,43 +209,125 @@
 /* Card Styles */
 .cdc-extension-card {
   background-color: white;
-  border-radius: 8px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  padding: 15px;
-  margin-bottom: 15px;
+  border-radius: 5px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  padding: 0px;
+  margin-bottom: 5px;
+
+
 }
 
+
+
 .cdc-extension-card-header {
-  padding: 10px;
+  padding: 5px;
   font-family: Arial, sans-serif;
   font-weight: bold;
   cursor: pointer;
   border-radius: 5px 5px 0 0;
+  width: 100%;
+
+
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  justify-content: flex-start;
+  align-items: stretch;
+
+}
+
+
+.cdc-extension-card-title-visible {
+
+  margin: 2.5px 0;
+  width: 95%;
+
+
+
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  justify-content: flex-start;
+
+
+}
+
+
+
+.cdc-extension-level {
+  display: flex;
+  background-color: white;
+  width: 25%;
+
 }
 
 .cdc-extension-level-1 {
-  background-color: #26418f;
-  color: white;
+
+  display: flex;
+  background-color: white;
+  color: black;
+  flex-direction: column;
+
+  border-color: #26418f;
+  border-width: medium;
+  border-top-style: solid;
+  border-radius: 5px;
+
+
 }
 
 .cdc-extension-level-2 {
-  background-color: #ffd54f;
+
+  display: flex;
+  background-color: white;
   color: black;
+
+  border-color: #ffd54f;
+  border-width: medium;
+  border-top-style: solid;
+  border-radius: 5px;
+  flex-direction: column;
+
+
 }
 
 .cdc-extension-level-3 {
-  background-color: #ffad42;
+
+
+  display: flex;
+  background-color: white;
   color: black;
+
+  border-color: #ffad42;
+  border-width: medium;
+  border-top-style: solid;
+  border-radius: 5px;
+  flex-direction: column;
+
+
 }
 
 .cdc-extension-level-4 {
-  background-color: #af4448;
-  color: white;
+
+  display: flex;
+  background-color: white;
+  color: black;
+
+  border-color: #af4448;
+  border-width: medium;
+  border-top-style: solid;
+  border-radius: 5px;
+  flex-direction: column;
+
+
 }
 
 .cdc-extension-card-body {
-  padding: 10px;
   display: none;
+  border-radius: 5px;
+  border: 1px solid lightgray;
+  padding: 10px;
+
 }
 
 .cdc-extension-card-meta {
@@ -221,12 +340,17 @@
 .cdc-extension-card-title {
   font-size: 16px;
   font-weight: bold;
-  margin: 10px 0;
+  margin: 2.5px 0;
+
+
+
 }
 
 .cdc-extension-card-description {
   font-size: 14px;
-  color: #666;
+  ;
+  color: #3a3a3a;
+
 }
 
 .cdc-extension-card-link {
@@ -239,21 +363,241 @@
 }
 
 .cdc-extension-dismiss-button {
-  background: none;
   border: none;
-  color: #ff0000;
   cursor: pointer;
   font-size: 14px;
-  text-decoration: underline;
+  padding: 3px;
+  background-color: transparent;
+  border-radius: 5px;
+  font-size: 12px;
+  float: end;
+  color: #FF5722;
+  width: 25%;
+  border-color: #FF5722;
+  border: solid;
+  border-radius: 5px;
+  border-width: 1px;
+
 }
 
 .cdc-extension-dismiss-button:hover {
-  color: #cc0000;
+  color: white;
+  background-color: #FF5722;
 }
 
 /* Error Message Styles */
 .cdc-extension-error-message {
-  color: #ff0000;
+  color: #FF5722;
   font-weight: bold;
   padding: 10px;
 }
+
+.cdc-extension-footer {
+  position: fixed;
+  bottom: 5px;
+  z-index: 1003;
+  border-top: 1px solid rgb(204, 204, 204);
+  background: gray;
+  width: 100%;
+
+  margin-top: 0;
+  padding-top: 5px;
+  padding-bottom: 0;
+  margin-bottom: 0;
+  border-width: 2px;
+  font-size: 12px;
+  display: contents;
+}
+
+.cdc-extension-label-text-small {
+  text-align: left;
+  font-size: 12px;
+  color: #000000d6;
+  margin-bottom: 1px;
+  margin-top: 1px;
+}
+
+.cdc-extension-options {
+
+  padding: 5px 10px 25px;
+  margin-bottom: 10px;
+  border-radius: 5px;
+
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.3s ease-out;
+
+  background-color: white;
+  border: 2px solid #64b5f6ba;
+
+}
+
+.cdc-extension-options.open {
+  max-height: 500px;
+  /* Set to a reasonable height for the content */
+}
+
+.cdc-extension-label-text-small.active {
+  color: darkgray;
+}
+
+.cdc-extention-hr-options {
+  border: solid #3475ff63;
+  border-width: 1px 0 0;
+  height: 1px;
+  margin: 10px 0;
+  width: 90%;
+  margin-right: auto;
+  margin-left: auto;
+}
+
+.cdc-extension-transparency-slider {
+  display: block;
+  width: 100%;
+  /* Full width for slider */
+  margin-left: 5px;
+}
+
+.cdc-extension-slider-labels {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+  margin-top: 4px;
+  padding: 0 5px;
+  /* Add padding for extra space around labels */
+}
+
+.cdc-extension-slider-label-start,
+.cdc-extension-slider-label-end {
+  padding: 0 2px;
+  /* Add padding directly to labels if needed */
+}
+
+.cdc-extension-svg {
+  width: -webkit-fill-available;
+}
+
+.cdc-extension-card-icon {
+  width: 64px;
+  height: 64x;
+  margin-right: 10px;
+  vertical-align: middle;
+  background-color: white;
+}
+
+.cdc-extension-card-header-text {
+  display: flex;
+  width: 85%;
+
+
+  max-width: 85%;
+
+  align-content: stretch;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: flex-start;
+
+  padding-left: 15px;
+
+
+}
+
+.cdc-extension-card-date {
+  font-size: 12px;
+  font-weight: lighter;
+
+}
+
+.cdc-extension-card-title-visible-text {
+
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-size: 14px;
+  width: 100%;
+
+  font-weight: bold;
+  color: rgb(24, 30, 37);
+
+}
+
+.cdc-extension-card-title-visible-right {
+  float: right;
+  display: flex;
+  width: 25%;
+  justify-content: flex-end;
+  font-size: 14px;
+
+  justify-content: space-around
+}
+
+.cdc-extension-card-title-visible-expand {
+  margin-right: 7px;
+  cursor: pointer;
+  color: #00467f;
+
+}
+
+.cdc-extension-card-title-visible-close {
+
+  font-weight: bold;
+  color: #c30019;
+
+}
+
+.cdc-extension-circle-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 50%;
+  border: solid;
+  text-align: center;
+  font-family: Arial, sans-serif;
+  color: #333;
+  position: relative;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+
+
+  width: 64px;
+  height: 64px;
+  border-width: 7px;
+
+  min-width: 64px;
+
+
+}
+
+.cdc-extension-circle-text {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 24px;
+}
+
+.cdc-extension-level {
+
+  color: #666;
+
+  width: 100%;
+  font-size: 10px;
+  background-color: transparent;
+  justify-content: center;
+  margin-bottom: 3px;
+
+
+}
+
+.cdc-extension-number {
+  color: #333;
+
+  width: 100%;
+  font-size: 24px;
+  background-color: transparent;
+  margin-top: -5px;
+
+
+}
+
